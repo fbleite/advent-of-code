@@ -53,12 +53,12 @@ class Day2Test {
 
     @Test
     void isDampenerSafe() {
-//        assertTrue(Day2.isDampenerSafe(List.of(7, 6, 4, 2, 1)));
-//        assertFalse(Day2.isDampenerSafe(List.of(1, 2, 7, 8, 9)));
-//        assertFalse(Day2.isDampenerSafe(List.of(9, 7, 6, 2, 1)));
-//        assertTrue(Day2.isDampenerSafe(List.of(1, 3, 2, 4, 5)));
-//        assertTrue(Day2.isDampenerSafe(List.of(8, 6, 4, 4, 1)));
-//        assertTrue(Day2.isDampenerSafe(List.of(1, 3, 6, 7, 9)));
+        assertTrue(Day2.isDampenerSafe(List.of(7, 6, 4, 2, 1)));
+        assertFalse(Day2.isDampenerSafe(List.of(1, 2, 7, 8, 9)));
+        assertFalse(Day2.isDampenerSafe(List.of(9, 7, 6, 2, 1)));
+        assertTrue(Day2.isDampenerSafe(List.of(1, 3, 2, 4, 5)));
+        assertTrue(Day2.isDampenerSafe(List.of(8, 6, 4, 4, 1)));
+        assertTrue(Day2.isDampenerSafe(List.of(1, 3, 6, 7, 9)));
         assertTrue(Day2.isDampenerSafe(List.of(0, 5, 6, 7, 9)));
 
     }
