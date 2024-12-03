@@ -62,9 +62,9 @@ public class Day1 {
     }
 
     private static String getRealInput() throws URISyntaxException, IOException {
-        URL resource = Day1.class.getClassLoader().getResource("Day1Input.txt");
+        URL resource = Day1.class.getClassLoader().getResource("Day1.txt");
         if (resource == null) {
-            throw new IllegalArgumentException("file not found! " + "Day1Input.txt");
+            throw new IllegalArgumentException("file not found! " + "Day1.txt");
         }
 
         File file = new File(resource.toURI());
