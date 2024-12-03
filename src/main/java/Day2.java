@@ -1,8 +1,5 @@
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +9,7 @@ public class Day2 {
 
 
     public static void main(String [] args) throws IOException, URISyntaxException {
-        var input = getFileString();
+        var input = FileUtil.getFileString("Day2.txt");
         System.out.println(countSafeReports(input));
         System.out.println(countDampenerSafeReports(input));
     }
@@ -73,14 +70,4 @@ public class Day2 {
 
         return false;
     }
-
-    private static String getFileString() throws IOException, URISyntaxException {
-        URL resource = Day2.class.getClassLoader().getResource("Day2.txt");
-        if (resource == null) {
-            throw new IllegalArgumentException("file not found! " + "Day2.txt");
-        }
-        File file = new File(resource.toURI());
-        return Files.readString(file.toPath());
-    }
-
 }

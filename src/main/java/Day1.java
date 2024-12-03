@@ -1,14 +1,11 @@
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
 
 public class Day1 {
     public static void main (String[] args) throws URISyntaxException, IOException {
         System.out.println("Day 1");
-        var input = parseInput(getRealInput());
+        var input = parseInput(FileUtil.getFileString("Day1.txt"));
         System.out.println(getDistance(input.left, input.right));
         System.out.println(getSimilarityScore(input.left, input.right));
     }
@@ -59,15 +56,5 @@ public class Day1 {
                 3   9
                 3   3
                 """;
-    }
-
-    private static String getRealInput() throws URISyntaxException, IOException {
-        URL resource = Day1.class.getClassLoader().getResource("Day1.txt");
-        if (resource == null) {
-            throw new IllegalArgumentException("file not found! " + "Day1.txt");
-        }
-
-        File file = new File(resource.toURI());
-        return Files.readString(file.toPath());
     }
 }
