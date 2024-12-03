@@ -7,7 +7,7 @@ import java.nio.file.Files;
 public class FileUtil {
 
     public static String getFileString (String filename) throws URISyntaxException, IOException {
-        URL resource = Day3.class.getClassLoader().getResource(filename);
+        URL resource = FileUtil.class.getClassLoader().getResource(filename);
         if (resource == null) {
             throw new IllegalArgumentException("file not found! " + filename);
         }
