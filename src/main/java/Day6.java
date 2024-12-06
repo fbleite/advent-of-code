@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Day6 {
 
@@ -10,6 +9,7 @@ public class Day6 {
         char[][] parsedInput = parseInput(input);
         System.out.println(countPath(parsedInput));
         parsedInput = parseInput(input);
+        System.out.println(countTraps(parsedInput));
 
     }
 
@@ -21,49 +21,33 @@ public class Day6 {
         }
         return result;
     }
-
     public static int countTraps (char [][] input) {
-        var start = findStart(input);
-        int i = start.i;
-        int j = start.j;
         int count = 0;
-        List <Coordinate> obstructions = new ArrayList<>();
-        while (i >= 0 && i < input.length && j >= 0 && j < input[0].length) {
-            char direction = input[i][j];
-            if (direction == '^') {
-                if (i - 1 < 0 || input[i - 1][j] != '#') {
-                    i = i - 1;
-                } else if (input[i - 1][j] == '#') {
-                    direction = '>';
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[0].length; j++) {
+//                System.out.println(String.format("i: '%d' | j: '%d' | count: '%d'", i, j, count));
+                var copy = copyInput(input);
+                if (copy[i][j] == '.') {
+                    copy[i][j] = '#';
+                    if (!markPath(copy)) {
+//                        System.out.println("Valid trap");
+                        count++;
+                    }
                 }
-            } else if (direction == '>') {
-                if (j + 1 >= input[0].length || input[i][j + 1] != '#') {
-                    j = j + 1;
-                } else if (input[i][j + 1] == '#') {
-                    direction = 'v';
-                }
-            } else if (direction == 'v') {
-                if (i + 1 >= input.length || input[i + 1][j] != '#') {
-                    i = i + 1;
-                } else if (input[i + 1][j] == '#') {
-                    direction = '<';
-                }
-            } else if (direction == '<') {
-                if (j - 1 < 0 || input[i][j - 1] != '#') {
-                    j = j - 1;
-                } else if (input[i][j - 1] == '#') {
-                    direction = '^';
-                }
-            } else {
-                throw new RuntimeException("WTF");
-            }
-            if (i >= 0 && i < input.length && j >= 0 && j < input[0].length) {
-                input[i][j] = direction;
             }
         }
         return count;
     }
 
+    private static char[][] copyInput (char [][] input) {
+        char [][] copy = new char[input.length][input[0].length];
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[0].length; j++) {
+                copy[i][j] = input[i][j];
+            }
+        }
+        return copy;
+    }
 
     public static int countPath(char[][] input) {
         markPath(input);
@@ -76,47 +60,50 @@ public class Day6 {
         return count;
     }
 
-    public static void markPath(char [][] input) {
+    public static boolean markPath(char [][] input) {
+        Map<Coordinate, Set<Character>> been = new HashMap<>();
         var start = findStart(input);
         int i = start.i;
         int j = start.j;
         while (i >= 0 && i < input.length && j >= 0 && j < input[0].length) {
             char direction = input[i][j];
+            int nextI = i;
+            int nextJ = j;
+            var dirs = been.getOrDefault(new Coordinate(i, j), new HashSet<>());
+            if (dirs.contains(direction)) {
+                return false;
+            }
+            dirs.add(direction);
+            been.put(new Coordinate(i, j), dirs);
+            char nextDirection;
             if (direction == '^') {
-                if (i - 1 < 0 || input[i - 1][j] != '#') {
-                    input[i][j] = 'X';
-                    i = i - 1;
-                } else if (input[i - 1][j] == '#') {
-                    direction = '>';
-                }
+                nextI = i - 1;
+                nextDirection = '>';
             } else if (direction == '>') {
-                if (j + 1 >= input[0].length || input[i][j + 1] != '#') {
-                    input[i][j] = 'X';
-                    j = j + 1;
-                } else if (input[i][j + 1] == '#') {
-                    direction = 'v';
-                }
+                nextJ = j + 1;
+                nextDirection = 'v';
             } else if (direction == 'v') {
-                if (i + 1 >= input.length || input[i + 1][j] != '#') {
-                    input[i][j] = 'X';
-                    i = i + 1;
-                } else if (input[i + 1][j] == '#') {
-                    direction = '<';
-                }
+                nextI = i + 1;
+                nextDirection = '<';
             } else if (direction == '<') {
-                if (j - 1 < 0 || input[i][j - 1] != '#') {
-                    input[i][j] = 'X';
-                    j = j - 1;
-                } else if (input[i][j - 1] == '#') {
-                    direction = '^';
-                }
+                nextJ = j - 1;
+                nextDirection = '^';
             } else {
                 throw new RuntimeException("WTF");
             }
-            if (i >= 0 && i < input.length && j >= 0 && j < input[0].length) {
-                input[i][j] = direction;
+
+            if (nextI >= input.length || nextI < 0 || nextJ >= input[0].length || nextJ < 0 || input[nextI][nextJ] != '#') {
+                input[i][j] = 'X';
+                i = nextI;
+                j = nextJ;
+                if (i >= 0 && i < input.length && j >= 0 && j < input[0].length) {
+                    input[i][j] = direction;
+                }
+            } else if (input[nextI][nextJ] == '#') {
+                input[i][j] = nextDirection;
             }
         }
+        return true;
     }
 
     public record Coordinate(int i, int j){}
