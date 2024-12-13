@@ -37,7 +37,7 @@ class Day10Test {
                 9876
                 """;
         var map = Day10.parseInput(input);
-        Map<Day10.Coordinate, Integer> tops = new HashMap<>();
+        Map<Coordinate, Integer> tops = new HashMap<>();
         Day10.getTrailheadTops(0, 0, map, tops);
         assertEquals(1, tops.size());
     }
@@ -54,7 +54,7 @@ class Day10Test {
 9111119
                 """;
         var map = Day10.parseInput(input);
-        Map<Day10.Coordinate, Integer> tops = new HashMap<>();
+        Map<Coordinate, Integer> tops = new HashMap<>();
         Day10.getTrailheadTops(0, 3, map, tops);
         assertEquals(2, tops.size());
     }

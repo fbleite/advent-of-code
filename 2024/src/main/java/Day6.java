@@ -63,8 +63,8 @@ public class Day6 {
     public static boolean markPath(char [][] input) {
         Map<Coordinate, Set<Character>> been = new HashMap<>();
         var start = findStart(input);
-        int i = start.i;
-        int j = start.j;
+        int i = start.i();
+        int j = start.j();
         while (i >= 0 && i < input.length && j >= 0 && j < input[0].length) {
             char direction = input[i][j];
             int nextI = i;
@@ -106,7 +106,6 @@ public class Day6 {
         return true;
     }
 
-    public record Coordinate(int i, int j){}
     private static Coordinate findStart(char [][] input) {
         for (int i = 0; i < input.length; i++) {
             for (int j = 0; j < input[0].length; j++) {

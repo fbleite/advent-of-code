@@ -20,9 +20,6 @@ public class Day8 {
         return result;
     }
 
-    public record Coordinate(int i, int j){}
-
-
     public static int countAntinodes(char [][] grid, boolean resonantFrequency) {
         Map<Character, List<Coordinate>> antennas = new HashMap<>();
         for (int i = 0; i < grid.length; i++) {
@@ -44,20 +41,20 @@ public class Day8 {
                     if (i==j) {
                         continue;
                     }
-                    int ai = locations.get(i).i;
-                    int aj = locations.get(i).j;
+                    int ai = locations.get(i).i();
+                    int aj = locations.get(i).j();
                     int resonantOccur = 0;
                     while (ai >= 0 && ai < grid.length && aj >= 0 && aj < grid[0].length && (resonantFrequency || resonantOccur < 1)) {
-                        if (locations.get(i).i < locations.get(j).i) {
-                            ai = ai - Math.abs(locations.get(j).i - locations.get(i).i);
+                        if (locations.get(i).i() < locations.get(j).i()) {
+                            ai = ai - Math.abs(locations.get(j).i() - locations.get(i).i());
                         } else {
-                            ai = ai + Math.abs(locations.get(j).i - locations.get(i).i);
+                            ai = ai + Math.abs(locations.get(j).i() - locations.get(i).i());
                         }
 
-                        if (locations.get(i).j < locations.get(j).j) {
-                            aj = aj - Math.abs(locations.get(j).j - locations.get(i).j);
+                        if (locations.get(i).j() < locations.get(j).j()) {
+                            aj = aj - Math.abs(locations.get(j).j() - locations.get(i).j());
                         } else {
-                            aj = aj + Math.abs(locations.get(j).j - locations.get(i).j);
+                            aj = aj + Math.abs(locations.get(j).j() - locations.get(i).j());
                         }
                         // Filter out antinodes out of the grid
                         if (ai >= 0 && ai < grid.length && aj >= 0 && aj < grid[0].length) {

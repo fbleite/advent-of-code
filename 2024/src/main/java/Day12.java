@@ -22,10 +22,6 @@ public class Day12 {
         return result;
     }
 
-    public record Coordinate(int i, int j) {
-    }
-
-
     public static long calculateTotalPrice(char[][] map, boolean cheaper) {
         var visited = new boolean[map.length][map[0].length];
         long totalPrice = 0;
@@ -72,8 +68,8 @@ public class Day12 {
             var currPlot = queue.poll();
             area++;
             for (var direction : Side.values()) {
-                int newI = currPlot.i + direction.coordinate.i;
-                int newJ = currPlot.j + direction.coordinate.j;
+                int newI = currPlot.i() + direction.coordinate.i();
+                int newJ = currPlot.j() + direction.coordinate.j();
                 if (isValid(newI, newJ, map, currChar)) {
                     if (!visited[newI][newJ]) {
                         queue.add(new Coordinate(newI, newJ));
@@ -108,8 +104,8 @@ public class Day12 {
 
     private static void visitAllFencesFromSide(Set<Fence> fences, Set<Fence> visited, Side side, Fence current) {
         visited.add(current);
-        int newI = current.coordinate.i + side.coordinate.i;
-        int newJ = current.coordinate.j + side.coordinate.j;
+        int newI = current.coordinate.i() + side.coordinate.i();
+        int newJ = current.coordinate.j() + side.coordinate.j();
         var nextFence = new Fence(new Coordinate(newI, newJ), current.side());
         if (fences.contains(nextFence)) {
             visitAllFencesFromSide(fences, visited, side, nextFence);

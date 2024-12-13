@@ -23,9 +23,6 @@ public class Day10 {
         return result;
     }
 
-    public record Coordinate(int i, int j) {
-    }
-
     public static int calculateMapScore(int[][] map, boolean multiplePath) {
         int sum = 0;
         for (int i = 0; i < map.length; i++) {
