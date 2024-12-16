@@ -189,9 +189,7 @@ public class Day15 {
                             List<Coordinate> toMove = new ArrayList<>();
                             var canMove = canMoveVertical(md.map, md.position.i(), md.position.j(), direction, toMove);
                             if (canMove) {
-                                var visited = new boolean[md.map.length][md.map[0].length];
                                 moveVertical2(md, direction);
-//                                moveVertical(md.map, md.position.i(), md.position.j(), direction, visited, md.position.i(), toMove);
                                 return new MapAndDirections(md.map, md.directions.substring(1), new Coordinate(newRobotI, newRobotJ));
                             } else {
                                 new MapAndDirections(md.map, md.directions.substring(1), md.position);
@@ -213,16 +211,12 @@ public class Day15 {
         if (map[i][j] == '#') {
             return false;
         }
-
         if (map[i][j] == '[') {
-//            toMove.add(new Coordinate(i, j));
             return canMoveVertical(map, i + direction.coordinate.i(), j, direction, toMove) && canMoveVertical(map, i + direction.coordinate.i(), j + 1, direction, toMove);
         } else if (map[i][j] == ']') {
-//            toMove.add(new Coordinate(i, j));
             return canMoveVertical(map, i + direction.coordinate.i(), j, direction, toMove) && canMoveVertical(map, i + direction.coordinate.i(), j - 1, direction, toMove);
         }
         if (map[i][j] == '@') {
-//            toMove.add(new Coordinate(i, j));
             return canMoveVertical(map, i + direction.coordinate.i(), j, direction, toMove);
         }
         throw new RuntimeException("What's up?");
@@ -264,43 +258,6 @@ public class Day15 {
             allMovingBlocks.add(new Block(new Coordinate(i, j), curr));
             getAllBlocks(map, i + direction.coordinate.i(), j, direction, allMovingBlocks);
             getAllBlocks(map, i, j - 1, direction, allMovingBlocks);
-        }
-    }
-
-    private static void moveVertical(char[][] map, int i, int j, Direction direction, boolean[][] visited,
-                                     int robotI, List<Coordinate> allMoved) {
-        if (visited[i][j]) {
-            return;
-        }
-        var curr = map[i][j];
-        visited[i][j] = true;
-        if (curr == '#' || curr == '.') {
-            map[i][j] = map[i + direction.coordinate.i() * -1][j + direction.coordinate.j() * -1];
-            return;
-//            throw new RuntimeException("Can't move");
-        }
-
-        if (curr == '[') {
-            moveVertical(map, i + direction.coordinate.i(), j, direction, visited, robotI, allMoved);
-            moveVertical(map, i, j + 1, direction, visited, robotI, allMoved);
-        } else if (curr == ']') {
-            moveVertical(map, i + direction.coordinate.i(), j, direction, visited, robotI, allMoved);
-            moveVertical(map, i, j - 1, direction, visited, robotI, allMoved);
-        }
-        if (curr == '@') {
-            moveVertical(map, i + direction.coordinate.i(), j, direction, visited, robotI, allMoved);
-        }
-
-//        if (allMoved[i + direction.coordinate.i() * -1][j + direction.coordinate.j() * -1]) {
-        map[i][j] = map[i + direction.coordinate.i() * -1][j + direction.coordinate.j() * -1];
-//        } else {
-//            map[i][j] = '.';
-//        }
-
-        if (curr == '@') {
-            map[i][j] = '.';
-        } else if (robotI == i + direction.coordinate.i() * -1 && map[i][j] != '@') {
-            map[i][j] = '.';
         }
     }
 
