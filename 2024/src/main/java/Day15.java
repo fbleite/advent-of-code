@@ -1,13 +1,23 @@
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Day15 {
 
     public static void main(String[] args) throws URISyntaxException, IOException {
         var input = FileUtil.getFileString("Day15.txt");
+//        var md = parseInput(input);
+//        md = moveAll(md);
+//        System.out.println(gpsAllBoxes(md.map));
+
         var md = parseInput(input);
+        var resizedMap = resizeMap(md.map);
+        md = new Day15.MapAndDirections(resizedMap, md.directions(), Day15.findRobot(resizedMap));
         md = moveAll(md);
+        // TODO: Maybe we should check all the movable boxes next positions and check if they are walls indivvidually.
         System.out.println(gpsAllBoxes(md.map));
 
     }
@@ -42,19 +52,20 @@ public class Day15 {
         }
         throw new RuntimeException("No robot");
     }
+
     public static char[][] resizeMap(char[][] map) {
         var newMap = new char[map.length][map[0].length * 2];
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
                 if (map[i][j] == '.' || map[i][j] == '#') {
-                    newMap[i][j*2] = map[i][j];
-                    newMap[i][j*2 + 1] = map[i][j];
+                    newMap[i][j * 2] = map[i][j];
+                    newMap[i][j * 2 + 1] = map[i][j];
                 } else if (map[i][j] == '@') {
-                    newMap[i][j*2] = map[i][j];
-                    newMap[i][j*2 + 1] = '.';
+                    newMap[i][j * 2] = map[i][j];
+                    newMap[i][j * 2 + 1] = '.';
                 } else if (map[i][j] == 'O') {
-                    newMap[i][j*2] = '[';
-                    newMap[i][j*2 + 1] = ']';
+                    newMap[i][j * 2] = '[';
+                    newMap[i][j * 2 + 1] = ']';
                 }
             }
         }
@@ -79,8 +90,8 @@ public class Day15 {
     public static long gpsAllBoxes(char[][] map) {
         long sum = 0;
         for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map.length; j++) {
-                if (map[i][j] == 'O') {
+            for (int j = 0; j < map[0].length; j++) {
+                if (map[i][j] == 'O' || map[i][j] == '[') {
                     sum += ((i * 100) + j);
                 }
             }
@@ -89,10 +100,28 @@ public class Day15 {
     }
 
     public static MapAndDirections moveAll(MapAndDirections md) {
+        int countRocks = countRock(md.map);
         while (!md.directions.isBlank()) {
             md = moveDirection(md);
+            if (countRocks != countRock(md.map())) {
+                System.out.println("Wrong!");
+                System.out.println(md.directions.length());
+                throw new RuntimeException();
+            }
         }
         return md;
+    }
+
+    public static int countRock(char[][] map) {
+        int count = 0;
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[0].length; j++) {
+                if (map[i][j] == 'O' || map[i][j] == '[') {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public static MapAndDirections moveDirection(MapAndDirections md) {
@@ -133,7 +162,9 @@ public class Day15 {
 
                     if (md.map[newI][newJ] == '[' || md.map[newI][newJ] == ']') {
                         if (Direction.LEFT.equals(direction) || Direction.RIGHT.equals(direction)) {
-                            while (isValid(newI, newJ, md.map) && md.map[newI][newJ] != '.' && (md.map[newI][newJ] != '['|| md.map[newI][newJ] != ']')) {
+                            // TODO: Bug here
+                            while (isValid(newI, newJ, md.map) && md.map[newI][newJ] != '.' &&
+                                    (md.map[newI][newJ] != '[' || md.map[newI][newJ] != ']')) {
                                 newI = newI + direction.coordinate.i();
                                 newJ = newJ + direction.coordinate.j();
                             }
@@ -157,10 +188,12 @@ public class Day15 {
                                 }
                             }
                         } else {
-                            var canMove = canMoveVertical(md.map, md.position.i(), md.position.j(), direction);
+                            List<Coordinate> toMove = new ArrayList<>();
+                            var canMove = canMoveVertical(md.map, md.position.i(), md.position.j(), direction, toMove);
                             if (canMove) {
                                 var visited = new boolean[md.map.length][md.map[0].length];
-                                moveVertical(md.map, md.position.i(), md.position.j(), direction, '.', visited);
+                                moveVertical2(md, direction);
+//                                moveVertical(md.map, md.position.i(), md.position.j(), direction, visited, md.position.i(), toMove);
                                 return new MapAndDirections(md.map, md.directions.substring(1), new Coordinate(newRobotI, newRobotJ));
                             } else {
                                 new MapAndDirections(md.map, md.directions.substring(1), md.position);
@@ -173,7 +206,9 @@ public class Day15 {
         return new MapAndDirections(md.map, md.directions.substring(1), md.position);
     }
 
-    private static boolean canMoveVertical(char[][] map, int i, int j, Direction direction){
+    private static boolean canMoveVertical(char[][] map, int i, int j, Direction
+            direction, List<Coordinate> toMove) {
+        toMove.add(new Coordinate(i, j));
         if (map[i][j] == '.') {
             return true;
         }
@@ -182,17 +217,60 @@ public class Day15 {
         }
 
         if (map[i][j] == '[') {
-            return canMoveVertical(map, i + direction.coordinate.i(), j, direction) && canMoveVertical(map, i + direction.coordinate.i(), j + 1, direction);
+//            toMove.add(new Coordinate(i, j));
+            return canMoveVertical(map, i + direction.coordinate.i(), j, direction, toMove) && canMoveVertical(map, i + direction.coordinate.i(), j + 1, direction, toMove);
         } else if (map[i][j] == ']') {
-            return canMoveVertical(map, i + direction.coordinate.i(), j, direction) && canMoveVertical(map, i + direction.coordinate.i(), j - 1, direction);
+//            toMove.add(new Coordinate(i, j));
+            return canMoveVertical(map, i + direction.coordinate.i(), j, direction, toMove) && canMoveVertical(map, i + direction.coordinate.i(), j - 1, direction, toMove);
         }
         if (map[i][j] == '@') {
-            return canMoveVertical(map, i + direction.coordinate.i(), j, direction);
+//            toMove.add(new Coordinate(i, j));
+            return canMoveVertical(map, i + direction.coordinate.i(), j, direction, toMove);
         }
         throw new RuntimeException("What's up?");
     }
 
-    private static void moveVertical(char[][] map, int i, int j, Direction direction, char prev, boolean[][] visited){
+    record Block(Coordinate coordinate, char value) {
+    }
+
+    private static void moveVertical2(MapAndDirections md, Direction direction) {
+        Set<Block> allMovingBlocks = new HashSet<>();
+        getAllBlocks(md.map, md.position.i(), md.position.j(), direction, allMovingBlocks);
+        for (var block : allMovingBlocks) {
+            md.map[block.coordinate.i()][block.coordinate.j()] = '.';
+        }
+
+        for (var block : allMovingBlocks) {
+            md.map[block.coordinate.i() + direction.coordinate.i()][block.coordinate.j()] = block.value;
+        }
+    }
+
+    private static void getAllBlocks(char[][] map, int i, int j, Direction
+            direction, Set<Block> allMovingBlocks) {
+        var curr = map[i][j];
+
+        if (allMovingBlocks.contains(new Block(new Coordinate(i, j), curr))) {
+            return;
+        }
+        if (curr == '@') {
+            allMovingBlocks.add(new Block(new Coordinate(i, j), curr));
+            getAllBlocks(map, i + direction.coordinate.i(), j, direction, allMovingBlocks);
+        }
+        if (curr == '[') {
+            allMovingBlocks.add(new Block(new Coordinate(i, j), curr));
+            getAllBlocks(map, i + direction.coordinate.i(), j, direction, allMovingBlocks);
+            getAllBlocks(map, i, j + 1, direction, allMovingBlocks);
+        }
+
+        if (curr == ']') {
+            allMovingBlocks.add(new Block(new Coordinate(i, j), curr));
+            getAllBlocks(map, i + direction.coordinate.i(), j, direction, allMovingBlocks);
+            getAllBlocks(map, i, j - 1, direction, allMovingBlocks);
+        }
+    }
+
+    private static void moveVertical(char[][] map, int i, int j, Direction direction, boolean[][] visited,
+                                     int robotI, List<Coordinate> allMoved) {
         if (visited[i][j]) {
             return;
         }
@@ -205,17 +283,29 @@ public class Day15 {
         }
 
         if (curr == '[') {
-            moveVertical(map, i + direction.coordinate.i(), j, direction, curr, visited);
-            moveVertical(map, i , j + 1, direction, '.', visited);
+            moveVertical(map, i + direction.coordinate.i(), j, direction, visited, robotI, allMoved);
+            moveVertical(map, i, j + 1, direction, visited, robotI, allMoved);
         } else if (curr == ']') {
-            moveVertical(map, i + direction.coordinate.i(), j, direction, curr, visited);
-            moveVertical(map, i, j - 1, direction, '.', visited);
+            moveVertical(map, i + direction.coordinate.i(), j, direction, visited, robotI, allMoved);
+            moveVertical(map, i, j - 1, direction, visited, robotI, allMoved);
         }
         if (curr == '@') {
-            moveVertical(map, i + direction.coordinate.i(), j, direction, curr, visited);
+            moveVertical(map, i + direction.coordinate.i(), j, direction, visited, robotI, allMoved);
         }
-        map[i][j] = curr == '@' ? '.' : map[i + direction.coordinate.i() * -1][j + direction.coordinate.j() * -1];
+
+//        if (allMoved[i + direction.coordinate.i() * -1][j + direction.coordinate.j() * -1]) {
+        map[i][j] = map[i + direction.coordinate.i() * -1][j + direction.coordinate.j() * -1];
+//        } else {
+//            map[i][j] = '.';
+//        }
+
+        if (curr == '@') {
+            map[i][j] = '.';
+        } else if (robotI == i + direction.coordinate.i() * -1 && map[i][j] != '@') {
+            map[i][j] = '.';
+        }
     }
+
     private static boolean isValid(int newI, int newJ, char[][] map) {
         return newI >= 0 && newI < map.length &&
                 newJ >= 0 && newJ < map[0].length;

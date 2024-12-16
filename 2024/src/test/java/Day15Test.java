@@ -409,6 +409,7 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
         var md = new Day15.MapAndDirections(resizedMap, parsedInput.directions(), Day15.findRobot(resizedMap));
         var actual = Day15.moveAll(md);
         assertArrayEquals(map, actual.map());
+        assertEquals(9021, Day15.gpsAllBoxes(actual.map()));
     }
 
     @Test
@@ -465,5 +466,71 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
         assertArrayEquals(map, actual.map());
     }
 
+
+    @Test
+    void resize_box_vertical_bug_come_on() {
+        var input = """
+#####
+#...#
+#.O.#
+#.O@#
+#...#
+#####
+
+<^
+                """;
+        var map = new char[][]{
+                "##########".toCharArray(),
+                "##..[]..##".toCharArray(),
+                "##...@..##".toCharArray(),
+                "##.[]...##".toCharArray(),
+                "##......##".toCharArray(),
+                "##########".toCharArray(),
+        };
+        var parsedInput = Day15.parseInput(input);
+        var resizedMap = Day15.resizeMap(parsedInput.map());
+        var md = new Day15.MapAndDirections(resizedMap, parsedInput.directions(), Day15.findRobot(resizedMap));
+        var actual = Day15.moveAll(md);
+        assertArrayEquals(map, actual.map());
+    }
+
+
+
+//
+//    @Test
+//    void moveAll_large_gps() {
+//        var input = """
+//##########
+//#..O..O.O#
+//#......O.#
+//#.OO..O.O#
+//#..O@..O.#
+//#O#..O...#
+//#O..O..O.#
+//#.OO.O.OO#
+//#....O...#
+//##########
+//
+//<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+//vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+//><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+//<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+//^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+//^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+//>^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+//<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+//^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+//v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
+//                """;
+//
+//        var position = new Coordinate(4, 3);
+//        var parsedInput = Day15.parseInput(input);
+//
+//        var resizedMap = Day15.resizeMap(parsedInput.map());
+//        var md = new Day15.MapAndDirections(resizedMap, md.directions(), Day15.findRobot(resizedMap));
+//
+//        md = Day15.moveAll(parsedInput);
+//        assertEquals(10092, Day15.gpsAllBoxes(md.map()));
+//    }
 
 }
