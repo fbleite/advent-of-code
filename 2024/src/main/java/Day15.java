@@ -9,15 +9,14 @@ public class Day15 {
 
     public static void main(String[] args) throws URISyntaxException, IOException {
         var input = FileUtil.getFileString("Day15.txt");
-//        var md = parseInput(input);
-//        md = moveAll(md);
-//        System.out.println(gpsAllBoxes(md.map));
-
         var md = parseInput(input);
+        md = moveAll(md);
+        System.out.println(gpsAllBoxes(md.map));
+
+        md = parseInput(input);
         var resizedMap = resizeMap(md.map);
         md = new Day15.MapAndDirections(resizedMap, md.directions(), Day15.findRobot(resizedMap));
         md = moveAll(md);
-        // TODO: Maybe we should check all the movable boxes next positions and check if they are walls indivvidually.
         System.out.println(gpsAllBoxes(md.map));
 
     }
@@ -162,9 +161,8 @@ public class Day15 {
 
                     if (md.map[newI][newJ] == '[' || md.map[newI][newJ] == ']') {
                         if (Direction.LEFT.equals(direction) || Direction.RIGHT.equals(direction)) {
-                            // TODO: Bug here
-                            while (isValid(newI, newJ, md.map) && md.map[newI][newJ] != '.' &&
-                                    (md.map[newI][newJ] != '[' || md.map[newI][newJ] != ']')) {
+                            while (isValid(newI, newJ, md.map) &&
+                                    (md.map[newI][newJ] == '[' || md.map[newI][newJ] == ']')) {
                                 newI = newI + direction.coordinate.i();
                                 newJ = newJ + direction.coordinate.j();
                             }
